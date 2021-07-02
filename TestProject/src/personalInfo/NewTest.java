@@ -5,6 +5,12 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 
+import static org.testng.Assert.assertTrue;
+
+import java.awt.Desktop.Action;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +20,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.*;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.AfterTest;
@@ -95,7 +103,41 @@ public class NewTest {
 	  
   }
   
+  	@Test
+	  public void DragAndDrop() 
+	  {
+	  		driver.get("http://www.dhtmlgoodies.com/scripts/drag-drop-custom/demo-drag-drop-3.html");
+		  driver.manage().timeouts().implicitlyWait(120, TimeUnit.SECONDS);
+		  //Origin of the element
+		  WebElement dragElement=driver.findElement(By.xpath("//div[@id='box3']"));
+		  String text=dragElement.getText();
+		  driver.manage().timeouts().implicitlyWait(120, TimeUnit.SECONDS);
+		  //Destination of element
+		  WebElement dropElement=driver.findElement(By.xpath("//div[@id='box103']"));
+
+		  Actions builder = new Actions(driver);
+		  //group all the series of actions in Actions class
+		  org.openqa.selenium.interactions.Action dragAndDrop = builder.clickAndHold(dragElement).moveToElement(dropElement).release(dropElement).build();
+		  //finally we perform the actions
+		  dragAndDrop.perform();
+		  driver.manage().timeouts().implicitlyWait(120, TimeUnit.SECONDS);
+		  WebElement dropElementaftermove=driver.findElement(By.xpath("//div[@id='box103']"));
+		  assertTrue(dropElementaftermove.getText().contains(text));
+		  
+  }
  
+  	@Test
+  	public void FileUpload()
+  	{
+  		driver.get("https://blueimp.github.io/jQuery-File-Upload/");
+  		WebElement fileUpload= driver.findElement(By.xpath("//input[@name='files[]']"));
+  		Path path = Paths.get("test.txt");
+  		String s= path.toString();
+  		fileUpload.sendKeys(s);
+  		String uploadfileName = driver.findElement(By.cssSelector(".template-upload.fade.in>td>p.name")).getText();
+  		Assert.assertEquals("test.txt", uploadfileName);
+  		//fileUpload.sendKeys(path.)
+  	}
 
   @BeforeClass
   public void beforeClass() {
